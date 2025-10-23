@@ -5,9 +5,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
@@ -15,8 +12,11 @@ const config_1 = require("@nestjs/config");
 const typeorm_1 = require("@nestjs/typeorm");
 const app_controller_1 = require("./app.controller");
 const app_service_1 = require("./app.service");
-const database_config_1 = __importDefault(require("./config/database.config"));
 const users_module_1 = require("./modules/users/users.module");
+const auth_module_1 = require("./modules/auth/auth.module");
+const lots_module_1 = require("./modules/lots/lots.module");
+const producers_module_1 = require("./modules/producers/producers.module");
+const parcels_module_1 = require("./modules/parcels/parcels.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -25,15 +25,34 @@ exports.AppModule = AppModule = __decorate([
         imports: [
             config_1.ConfigModule.forRoot({
                 isGlobal: true,
-                load: [database_config_1.default],
                 envFilePath: ['.env'],
             }),
             typeorm_1.TypeOrmModule.forRootAsync({
                 imports: [config_1.ConfigModule],
                 inject: [config_1.ConfigService],
-                useFactory: (configService) => configService.getOrThrow('database'),
+                useFactory: (configService) => {
+                    console.log('=== TYPEORM CONFIG ===');
+                    console.log('PASSWORD from env:', configService.get('DATABASE_PASSWORD'));
+                    console.log('PASSWORD type:', typeof configService.get('DATABASE_PASSWORD'));
+                    return {
+                        type: 'postgres',
+                        host: configService.get('DATABASE_HOST', 'localhost'),
+                        port: configService.get('DATABASE_PORT', 5432),
+                        username: configService.get('DATABASE_USER', 'postgres'),
+                        password: configService.get('DATABASE_PASSWORD', 'Admin'),
+                        database: configService.get('DATABASE_NAME', 'traca_db'),
+                        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+                        synchronize: configService.get('NODE_ENV') === 'development',
+                        logging: configService.get('DATABASE_LOGGING') === 'true',
+                        autoLoadEntities: true,
+                    };
+                },
             }),
             users_module_1.UsersModule,
+            auth_module_1.AuthModule,
+            lots_module_1.LotsModule,
+            producers_module_1.ProducersModule,
+            parcels_module_1.ParcelsModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

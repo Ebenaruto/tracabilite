@@ -1,0 +1,123 @@
+### Variables
+@baseUrl = http://localhost:3000
+@email = test@traca.com
+@password = TestPassword123!
+
+### 1. Register (Créer un utilisateur)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}",
+  "fullName": "Utilisateur Test",
+  "phone": "+226 70 00 00 00"
+}
+
+### 2. Login (Se connecter)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "{{password}}"
+}
+
+### 3. Login avec mauvais mot de passe (pour tester)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "{{email}}",
+  "password": "wrongpassword"
+}
+
+### ============================================
+### TESTS MODULE LOTS
+### ============================================
+
+### Variables pour les lots
+@lotId =c06a418e-222f-4069-baca-ff0fa4ff857c
+
+### 4. Créer un nouveau lot
+POST {{baseUrl}}/lots
+Content-Type: application/json
+
+{
+  "initialQuantityKg": 200,
+  "mangoVariety": "greffe",
+  "destinationMarket": "export_eu",
+  "notes": "troisieme récolte de la saison"
+}
+
+### 5. Lister tous les lots
+GET {{baseUrl}}/lots
+
+### 6. Voir un lot spécifique (remplace l'ID après avoir créé un lot)
+GET {{baseUrl}}/lots/{{lotId}}
+
+### 7. Ajouter un événement HARVEST à un lot
+POST {{baseUrl}}/lots/{{lotId}}/events
+Content-Type: application/json
+
+{
+  "eventType": "harvest",
+  "eventDatetime": "2025-10-17T08:30:00Z",
+  "durationMinutes": 120,
+  "notes": "Récolte matinale",
+  "kdes": [
+    {
+      "keyName": "temperature",
+      "value": "28",
+      "unit": "°C"
+    },
+    {
+      "keyName": "weather",
+      "value": "ensoleillé",
+      "unit": null
+    }
+  ]
+}
+
+### 8. Changer le statut d'un lot
+PATCH {{baseUrl}}/lots/{{lotId}}/status
+Content-Type: application/json
+
+{
+  "status": "in_progress"
+}
+
+### 4. Créer un nouveau lot
+POST {{baseUrl}}/lots
+Content-Type: application/json
+
+{
+  "initialQuantityKg": 125.5,
+  "mangoVariety": "Kent",
+  "destinationMarket": "export_eu",
+  "notes": "Première récolte de la saison"
+}
+
+### ============================================
+### TESTS MODULE PRODUCERS
+### ============================================
+
+### 9. Créer un producteur
+POST {{baseUrl}}/producers
+Content-Type: application/json
+
+{
+  "fullName": "Mamadou ZERBO",
+  "type": "individual",
+  "phone": "+226 70 12 35 56",
+  "email": "mamadou@example.com",
+  "address": {
+    "city": "Banfora",
+    "region": "Cascades",
+    "country": "Burkina Faso"
+  },
+  "notes": "Producteur expérimenté depuis 15 ans"
+}
+
+### 10. Lister tous les producteurs
+GET {{baseUrl}}/producers
