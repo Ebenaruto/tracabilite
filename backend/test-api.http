@@ -2,6 +2,7 @@
 @baseUrl = http://localhost:3000
 @email = test@traca.com
 @password = TestPassword123!
+@producerId = c95e6b85-5a65-429b-aa23-16b784e8282f
 
 ### 1. Register (Créer un utilisateur)
 POST {{baseUrl}}/auth/register
@@ -107,10 +108,10 @@ POST {{baseUrl}}/producers
 Content-Type: application/json
 
 {
-  "fullName": "Mamadou ZERBO",
+  "fullName": "Ali TERBO",
   "type": "individual",
-  "phone": "+226 70 12 35 56",
-  "email": "mamadou@example.com",
+  "phone": "+226 70 02 35 56",
+  "email": "mamadu@example.com",
   "address": {
     "city": "Banfora",
     "region": "Cascades",
@@ -121,3 +122,418 @@ Content-Type: application/json
 
 ### 10. Lister tous les producteurs
 GET {{baseUrl}}/producers
+
+### 11. Voir un producteur spécifique
+GET {{baseUrl}}/producers/{{producerId}}
+
+
+### ============================================
+### TESTS MODULE PARCELS
+### ============================================
+
+### Variables pour les parcels
+@producerId = cc438a0a-8300-4902-9a34-13748146fb9a
+@parcelId = f6eec449-3ddc-4494-83b1-9737bd30c63c
+
+### 11. Créer une parcelle
+POST {{baseUrl}}/parcels
+Content-Type: application/json
+
+{
+  "name": "Parcelle A1",
+  "producerId": "{{producerId}}",
+  "areaHectares": 2.5,
+  "mangoVariety": "Kent",
+  "treeCount": 150,
+  "plantingYear": 2018,
+  "cultivationType": "organic",
+  "hasIrrigation": true,
+  "notes": "Parcelle en conversion bio depuis 2020"
+}
+
+### 12. Lister toutes les parcelles
+GET {{baseUrl}}/parcels
+
+### 13. Lister les parcelles d'un producteur spécifique
+GET {{baseUrl}}/parcels?producerId={{producerId}}
+
+### 14. Voir une parcelle spécifique
+GET {{baseUrl}}/parcels/{{parcelId}}
+
+### 15. Modifier une parcelle
+PATCH {{baseUrl}}/parcels/{{parcelId}}
+Content-Type: application/json
+
+{
+  "treeCount": 160,
+  "notes": "Parcelle en conversion bio - 10 nouveaux arbres plantés"
+}
+
+### 16. Changer le statut d'une parcelle
+PATCH {{baseUrl}}/parcels/{{parcelId}}/status
+Content-Type: application/json
+
+{
+  "status": "active"
+}
+
+### ============================================
+### TESTS MODULE LAB (LABORATOIRE)
+### ============================================
+
+### Variables pour les tests lab
+@lotId = c06a418e-222f-4069-baca-ff0fa4ff857c
+@labTestId = a4d33eab-43f3-4246-bdde-3ef69b172006
+@userId = 9396e580-5764-489f-8f4d-6fe2e2c4675a
+
+### 17. Créer un test de laboratoire simple (sans résultats)
+POST {{baseUrl}}/lab/tests
+Content-Type: application/json
+
+{
+  "lotId": "{{lotId}}",
+  "testType": "microbiological",
+  "samplingDatetime": "2025-10-23T10:30:00Z",
+  "laboratoryName": "Laboratoire National de Santé Publique",
+  "laboratoryType": "external",
+  "notes": "Prélèvement pour analyse microbiologique standard"
+}
+
+### 18. Créer un test complet avec résultats
+POST {{baseUrl}}/lab/tests
+Content-Type: application/json
+
+{
+  "lotId": "{{lotId}}",
+  "testType": "humidity",
+  "samplingDatetime": "2025-10-23T14:00:00Z",
+  "analysisDatetime": "2025-10-23T16:30:00Z",
+  "laboratoryName": "Laboratoire Interne",
+  "laboratoryType": "internal",
+  "certificateNumber": "CERT-2025-001",
+  "notes": "Test d'humidité post-séchage",
+  "results": [
+    {
+      "parameterName": "Humidité",
+      "measuredValue": "11.5",
+      "unit": "%",
+      "acceptableLimit": "12",
+      "method": "Dessiccation ISO 712"
+    },
+    {
+      "parameterName": "Activité de l'eau",
+      "measuredValue": "0.58",
+      "unit": "Aw",
+      "acceptableLimit": "0.6",
+      "method": "ISO 21807"
+    }
+  ]
+}
+
+### 19. Créer un test pesticides avec résultats
+POST {{baseUrl}}/lab/tests
+Content-Type: application/json
+
+{
+  "lotId": "{{lotId}}",
+  "testType": "pesticides",
+  "samplingDatetime": "2025-10-23T09:00:00Z",
+  "analysisDatetime": "2025-10-24T15:00:00Z",
+  "laboratoryName": "Laboratoire National de Santé Publique",
+  "laboratoryType": "external",
+  "certificateNumber": "PEST-2025-042",
+  "notes": "Analyse multi-résidus de pesticides",
+  "results": [
+    {
+      "parameterName": "Chlorpyrifos",
+      "measuredValue": "0.002",
+      "unit": "mg/kg",
+      "acceptableLimit": "0.01",
+      "method": "GC-MS"
+    },
+    {
+      "parameterName": "Imidaclopride",
+      "measuredValue": "0.001",
+      "unit": "mg/kg",
+      "acceptableLimit": "0.05",
+      "method": "LC-MS/MS"
+    },
+    {
+      "parameterName": "Malathion",
+      "measuredValue": "< 0.001",
+      "unit": "mg/kg",
+      "acceptableLimit": "0.02",
+      "method": "GC-MS"
+    }
+  ]
+}
+
+### 20. Lister tous les tests de laboratoire
+GET {{baseUrl}}/lab/tests
+
+### 21. Lister les tests d'un lot spécifique
+GET {{baseUrl}}/lab/tests?lotId={{lotId}}
+
+### 22. Voir un test spécifique
+GET {{baseUrl}}/lab/tests/{{labTestId}}
+
+### 23. Changer le statut d'un test
+PATCH {{baseUrl}}/lab/tests/{{labTestId}}/status
+Content-Type: application/json
+
+{
+  "status": "completed"
+}
+
+### 24. Valider un test (par un responsable qualité)
+PATCH {{baseUrl}}/lab/tests/{{labTestId}}/validate
+Content-Type: application/json
+
+{
+  "validatorId": "{{userId}}"
+}
+
+### 25. Créer un test organoleptic (dégustation)
+POST {{baseUrl}}/lab/tests
+Content-Type: application/json
+
+{
+  "lotId": "{{lotId}}",
+  "testType": "organoleptic",
+  "samplingDatetime": "2025-10-23T11:00:00Z",
+  "analysisDatetime": "2025-10-23T11:30:00Z",
+  "laboratoryName": "Panel de dégustation interne",
+  "laboratoryType": "internal",
+  "notes": "Test organoleptique par le panel qualité",
+  "results": [
+    {
+      "parameterName": "Apparence",
+      "measuredValue": "4",
+      "unit": "/5",
+      "acceptableLimit": "3",
+      "method": "Échelle hédonique"
+    },
+    {
+      "parameterName": "Couleur",
+      "measuredValue": "5",
+      "unit": "/5",
+      "acceptableLimit": "3",
+      "method": "Échelle hédonique"
+    },
+    {
+      "parameterName": "Odeur",
+      "measuredValue": "4",
+      "unit": "/5",
+      "acceptableLimit": "3",
+      "method": "Échelle hédonique"
+    },
+    {
+      "parameterName": "Texture",
+      "measuredValue": "4",
+      "unit": "/5",
+      "acceptableLimit": "3",
+      "method": "Échelle hédonique"
+    },
+    {
+      "parameterName": "Goût",
+      "measuredValue": "5",
+      "unit": "/5",
+      "acceptableLimit": "3",
+      "method": "Échelle hédonique"
+    }
+  ]
+}
+
+### ============================================
+### TESTS MODULE NON-CONFORMITIES
+### ============================================
+
+### Variables pour les NC
+@lotId = c06a418e-222f-4069-baca-ff0fa4ff857c
+@labTestId = a4d33eab-43f3-4246-bdde-3ef69b172006
+@userId = 9396e580-5764-489f-8f4d-6fe2e2c4675a
+@ncId = 344e433f-0184-41f4-b952-3a713b9d529c
+@actionId = 85a15848-5c3a-4f92-b880-3fd67be27e41
+
+### 26. Créer une NC microbiologique (critique)
+POST {{baseUrl}}/non-conformities
+Content-Type: application/json
+
+{
+  "lotId": "{{lotId}}",
+  "labTestId": "{{labTestId}}",
+  "ncType": "microbiological",
+  "severity": "critical",
+  "description": "Présence de coliformes fécaux détectée dans l'échantillon",
+  "identifiedCause": "Contamination possible lors du lavage - eau non conforme",
+  "potentialImpact": "Risque sanitaire grave pour les consommateurs",
+  "openedBy": "{{userId}}",
+  "assignedTo": "{{userId}}",
+  "targetResolutionDate": "2025-10-30",
+  "correctiveActions": [
+    {
+      "actionType": "immediate",
+      "description": "Bloquer immédiatement le lot et le mettre en quarantaine",
+      "responsibleUserId": "{{userId}}",
+      "dueDate": "2025-10-24"
+    },
+    {
+      "actionType": "corrective",
+      "description": "Vérifier et désinfecter le système de lavage",
+      "responsibleUserId": "{{userId}}",
+      "dueDate": "2025-10-25"
+    },
+    {
+      "actionType": "preventive",
+      "description": "Mettre en place un contrôle qualité de l'eau quotidien",
+      "responsibleUserId": "{{userId}}",
+      "dueDate": "2025-10-27"
+    }
+  ]
+}
+
+### 27. Créer une NC physique (majeure)
+POST {{baseUrl}}/non-conformities
+Content-Type: application/json
+
+{
+  "lotId": "{{lotId}}",
+  "ncType": "physical",
+  "severity": "major",
+  "description": "Corps étrangers détectés (morceaux de plastique)",
+  "identifiedCause": "Détérioration d'un équipement de conditionnement",
+  "potentialImpact": "Risque d'étouffement pour les consommateurs",
+  "openedBy": "{{userId}}",
+  "targetResolutionDate": "2025-10-28",
+  "correctiveActions": [
+    {
+      "actionType": "immediate",
+      "description": "Arrêter la ligne de conditionnement",
+      "dueDate": "2025-10-24"
+    },
+    {
+      "actionType": "corrective",
+      "description": "Remplacer l'équipement défectueux",
+      "dueDate": "2025-10-26"
+    }
+  ]
+}
+
+### 28. Créer une NC organoleptique (mineure)
+POST {{baseUrl}}/non-conformities
+Content-Type: application/json
+
+{
+  "lotId": "{{lotId}}",
+  "ncType": "organoleptic",
+  "severity": "minor",
+  "description": "Couleur non conforme - mangue trop foncée",
+  "identifiedCause": "Température de séchage trop élevée",
+  "potentialImpact": "Impact sur l'acceptabilité du produit par les consommateurs",
+  "openedBy": "{{userId}}",
+  "targetResolutionDate": "2025-10-29",
+  "correctiveActions": [
+    {
+      "actionType": "corrective",
+      "description": "Calibrer les thermomètres des séchoirs",
+      "dueDate": "2025-10-26"
+    }
+  ]
+}
+
+### 29. Lister toutes les NC
+GET {{baseUrl}}/non-conformities
+
+### 30. Lister les NC d'un lot spécifique
+GET {{baseUrl}}/non-conformities?lotId={{lotId}}
+
+### 31. Lister les NC par statut (ouvertes)
+GET {{baseUrl}}/non-conformities?status=open
+
+### 32. Voir une NC spécifique
+GET {{baseUrl}}/non-conformities/{{ncId}}
+
+### 33. Assigner une NC à un responsable
+PATCH {{baseUrl}}/non-conformities/{{ncId}}/assign
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}"
+}
+
+### 34. Changer le statut d'une NC (mettre en cours)
+PATCH {{baseUrl}}/non-conformities/{{ncId}}/status
+Content-Type: application/json
+
+{
+  "status": "in_progress",
+  "userId": "{{userId}}"
+}
+
+### 35. Ajouter une action corrective à une NC existante
+POST {{baseUrl}}/non-conformities/{{ncId}}/actions
+Content-Type: application/json
+
+{
+  "actionType": "preventive",
+  "description": "Former tous les opérateurs aux bonnes pratiques d'hygiène",
+  "responsibleUserId": "{{userId}}",
+  "dueDate": "2025-11-01"
+}
+
+### 36. Marquer une action corrective comme complétée
+PATCH {{baseUrl}}/non-conformities/actions/{{actionId}}/status
+Content-Type: application/json
+
+{
+  "status": "completed",
+  "completionDate": "2025-10-25"
+}
+
+### 37. Vérifier l'efficacité d'une action corrective
+PATCH {{baseUrl}}/non-conformities/actions/{{actionId}}/verify
+Content-Type: application/json
+
+{
+  "verifierId": "{{userId}}",
+  "verificationNotes": "Action vérifiée et validée. Le système de lavage a été désinfecté et teste conforme."
+}
+
+### 38. Clôturer une NC (après résolution)
+PATCH {{baseUrl}}/non-conformities/{{ncId}}/close
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}",
+  "closureNotes": "Toutes les actions correctives ont été complétées et vérifiées. Le lot a été détruit. Les mesures préventives sont en place."
+}
+
+### 39. Créer une NC de processus
+POST {{baseUrl}}/non-conformities
+Content-Type: application/json
+
+{
+  "lotId": "{{lotId}}",
+  "ncType": "process",
+  "severity": "major",
+  "description": "Durée de séchage non respectée (10h au lieu de 18h minimum)",
+  "identifiedCause": "Erreur humaine - mauvaise lecture du planning",
+  "potentialImpact": "Humidité finale trop élevée - risque de moisissure",
+  "openedBy": "{{userId}}",
+  "assignedTo": "{{userId}}",
+  "targetResolutionDate": "2025-10-26",
+  "correctiveActions": [
+    {
+      "actionType": "immediate",
+      "description": "Mesurer l'humidité du lot et prolonger le séchage si nécessaire",
+      "responsibleUserId": "{{userId}}",
+      "dueDate": "2025-10-24"
+    },
+    {
+      "actionType": "preventive",
+      "description": "Installer des alarmes automatiques sur les durées de séchage",
+      "responsibleUserId": "{{userId}}",
+      "dueDate": "2025-11-05"
+    }
+  ]
+}

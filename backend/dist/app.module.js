@@ -17,6 +17,8 @@ const auth_module_1 = require("./modules/auth/auth.module");
 const lots_module_1 = require("./modules/lots/lots.module");
 const producers_module_1 = require("./modules/producers/producers.module");
 const parcels_module_1 = require("./modules/parcels/parcels.module");
+const lab_module_1 = require("./modules/lab/lab.module");
+const non_conformities_module_1 = require("./modules/non-conformities/non-conformities.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -53,6 +55,8 @@ exports.AppModule = AppModule = __decorate([
             lots_module_1.LotsModule,
             producers_module_1.ProducersModule,
             parcels_module_1.ParcelsModule,
+            lab_module_1.LabModule,
+            non_conformities_module_1.NonConformitiesModule,
         ],
         controllers: [app_controller_1.AppController],
         providers: [app_service_1.AppService],

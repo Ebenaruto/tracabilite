@@ -8,6 +8,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { LotsModule } from './modules/lots/lots.module';
 import { ProducersModule } from './modules/producers/producers.module';
 import { ParcelsModule } from './modules/parcels/parcels.module';
+import { LabModule } from './modules/lab/lab.module';
+import { NonConformitiesModule } from './modules/non-conformities/non-conformities.module';
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import { ParcelsModule } from './modules/parcels/parcels.module';
     LotsModule,
     ProducersModule,
     ParcelsModule,
+    LabModule,
+    NonConformitiesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
